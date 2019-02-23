@@ -207,4 +207,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Exclude data files
+data/
+
 # End of https://www.gitignore.io/api/linux,macos,pycharm,windows,webstorm,jupyternotebook
