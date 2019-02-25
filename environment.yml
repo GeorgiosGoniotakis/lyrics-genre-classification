@@ -6,7 +6,7 @@ dependencies:
   - backcall=0.1.0=py37_0
   - blas=1.0=mkl
   - bleach=3.0.2=py37_0
-  - ca-certificates=2018.12.5=0
+  - ca-certificates=2019.1.23=0
   - certifi=2018.11.29=py37_0
   - cycler=0.10.0=py37_0
   - dbus=1.13.2=h760590f_1
@@ -57,6 +57,7 @@ dependencies:
   - pandoc=2.2.3.2=0
   - pandocfilters=1.4.2=py37_1
   - parso=0.3.1=py37_0
+  - patsy=0.5.1=py37_0
   - pcre=8.42=h378b8a2_0
   - pexpect=4.6.0=py37_0
   - pickleshare=0.7.5=py37_0
@@ -75,12 +76,14 @@ dependencies:
   - qtconsole=4.4.1=py37_0
   - readline=7.0=h1de35cc_5
   - scipy=1.1.0=py37h28f7352_1
+  - seaborn=0.9.0=py37_0
   - send2trash=1.5.0=py37_0
   - setuptools=40.4.3=py37_0
   - simplegeneric=0.8.1=py37_2
   - sip=4.19.8=py37h0a44026_0
   - six=1.11.0=py37_1
   - sqlite=3.25.2=ha441bb4_0
+  - statsmodels=0.9.0=py37h1d22016_0
   - terminado=0.8.1=py37_1
   - testpath=0.4.2=py37_0
   - tk=8.6.8=ha441bb4_0
@@ -94,34 +97,39 @@ dependencies:
   - zeromq=4.2.5=h0a44026_1
   - zlib=1.2.11=hf3cbc9b_2
   - pip:
-      - absl-py==0.7.0
-      - astor==0.7.1
-      - chardet==3.0.4
-      - gast==0.2.2
-      - grpcio==1.18.0
-      - h5py==2.9.0
-      - idna==2.8
-      - kaggle==1.5.2
-      - keras==2.2.4
-      - keras-applications==1.0.7
-      - keras-preprocessing==1.0.9
-      - lxml==4.2.5
-      - markdown==3.0.1
-      - mock==2.0.0
-      - pbr==5.1.2
-      - protobuf==3.6.1
-      - python-slugify==2.0.1
-      - pyyaml==3.13
-      - requests==2.21.0
-      - scikit-learn==0.20.2
-      - sklearn==0.0
-      - tensorboard==1.12.2
-      - tensorflow==1.13.0rc1
-      - tensorflow-estimator==1.13.0rc0
-      - termcolor==1.1.0
-      - tqdm==4.30.0
-      - unidecode==1.0.23
-      - urllib3==1.22
-      - werkzeug==0.14.1
-      - xmltodict==0.11.0
+    - absl-py==0.7.0
+    - astor==0.7.1
+    - chardet==3.0.4
+    - docopt==0.6.2
+    - gast==0.2.2
+    - grpcio==1.18.0
+    - h5py==2.9.0
+    - idna==2.8
+    - kaggle==1.5.2
+    - keras==2.2.4
+    - keras-applications==1.0.7
+    - keras-preprocessing==1.0.9
+    - lxml==4.2.5
+    - markdown==3.0.1
+    - mock==2.0.0
+    - pbr==5.1.2
+    - pillow==5.4.1
+    - pipreqs==0.4.9
+    - protobuf==3.6.1
+    - python-slugify==2.0.1
+    - pyyaml==3.13
+    - requests==2.21.0
+    - scikit-learn==0.20.2
+    - sklearn==0.0
+    - tensorboard==1.12.2
+    - tensorflow==1.13.0rc1
+    - tensorflow-estimator==1.13.0rc0
+    - termcolor==1.1.0
+    - tqdm==4.30.0
+    - unidecode==1.0.23
+    - urllib3==1.22
+    - werkzeug==0.14.1
+    - wordcloud==1.5.0
+    - xmltodict==0.11.0
+    - yarg==0.1.9
 
