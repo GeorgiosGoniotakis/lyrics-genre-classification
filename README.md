@@ -9,7 +9,7 @@ This project was developed by: <a href="https://www.linkedin.com/in/georgiosgoni
 Use the <a href="environment.yml">environment.yml</a> file to build a conda environment with all the essential packages.
 
 ```bash
-conda env create --name music_genre_clf -f=environments.yml
+conda env create --name music_genre_clf -f=environment.yml
 ```
 
 Then obtain all the data files needed and place them inside the /data folder of the main root of the repository:
