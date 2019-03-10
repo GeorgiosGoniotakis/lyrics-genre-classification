@@ -24,6 +24,7 @@ def rem_swords(s):
     stop_words = stopwords.words('english')
     return " ".join([item for item in s.split() if item not in stop_words])
 
+
 def rem_other(s):
     """Replaces a word with a space."""
     rem_words = ["\n"]
@@ -41,19 +42,66 @@ def standard_preprocessing(s):
     return stem_words(rem_swords(rem_digits(rem_punct(rem_other(to_lower(s))))))
 
 
-def preprocess_data(data, col=None):
+def custom_preprocessing(s, filters):
+    """Invokes the functions specified on the given string
+    Filters that can be applied:
+        'lower': converts string to lower case
+        'punct': removes punctuation
+        'digits': removes digits
+        'stop': removes stop words
+        'stem': applies stemming
+        'custom': removes symbols as defined in rem_other
+    Args:
+        s: String to which the preprocessing should be applied
+        filters: A list of strings of preprocessing functions to be applied to the string
+    Returns:
+        The preprocessed string
+    """
+    functions_dict = {'lower': to_lower, 'punct': rem_punct, 'digits': rem_digits,
+                      'stop': rem_swords, 'custom': rem_other, 'stem': stem_words}
+    # Iterate through filters list and apply each function to string
+    for f in filters:
+        # Check that the filter is valid, otherwise print error message
+        if f in functions_dict:
+            fun = functions_dict[f]
+            s = fun(s)
+        else:
+            print(f + ' : Function not recognised')
+    return s
+
+
+def preprocess_data(data, filters=None, col=None):
     """Preprocesses a given DataFrame or string entry.
-    It applies conversion to lowercase, removes punctuation, removes digits,
+    If a list of functions is not specified,
+    it applies conversion to lowercase, removes punctuation, removes digits,
     removes stop words and stems the words.
+
+    Functions that can be specified are the above
     Args:
         data: A pandas DataFrame or a single string.
+        filters: A list of pre-processing functions to be applied to the data
         col: The name of the column that needs NLP preprocessing.
     Returns:
         The resulting data set.
     """
-    if col:
-        data[col] = data[col].apply(standard_preprocessing)
-    else:
-        data = standard_preprocessing(data)
 
+    # Apply pre-processing to data series
+    if col:
+        if filters:
+            # Apply custom pre-processing as defined by user in filters parameter
+            data[col] = data[col].apply(custom_preprocessing, args=(filters,))
+        else:
+            # Apply standard pre-processing
+            data[col] = data[col].apply(standard_preprocessing)
+    # Apply pre-processing to a string
+    else:
+        if filters:
+            # Apply custom pre-processing as defined by user in filters parameter
+            data = custom_preprocessing(data, filters)
+        else:
+            # Apply standard pre-processing
+            data = standard_preprocessing(data)
     return data
+
+
+function_list = [to_lower, rem_swords]
