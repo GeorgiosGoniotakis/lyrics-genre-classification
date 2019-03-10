@@ -9,6 +9,7 @@ SPOTIFY_API_BASE_URL = "https://api.spotify.com"
 API_VERSION = "v1"
 SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
 
+
 def get_spotify_token():
     client_token = base64.b64encode("{}:{}".format(SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET)
                                     .encode('UTF-8')).decode('ascii')
@@ -22,5 +23,5 @@ def get_spotify_token():
     access_token = json.loads(token_request.text)["access_token"]
     return access_token
 
-SPOTIFY_ACCESS_TOKEN = get_spotify_token()
 
+SPOTIFY_ACCESS_TOKEN = get_spotify_token()

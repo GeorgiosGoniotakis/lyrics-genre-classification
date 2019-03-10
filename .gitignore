@@ -210,4 +210,7 @@ $RECYCLE.BIN/
 # Exclude data files
 data/
 
+# Exclude API parameter files
+conf/config.ini
+
 # End of https://www.gitignore.io/api/linux,macos,pycharm,windows,webstorm,jupyternotebook
