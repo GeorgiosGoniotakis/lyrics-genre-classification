@@ -208,7 +208,7 @@ $RECYCLE.BIN/
 *.lnk
 
 # Exclude data files
-data/
+data/*
 
 # Exclude API parameter files
 conf/config.ini
