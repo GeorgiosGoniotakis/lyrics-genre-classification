@@ -99,6 +99,7 @@ dependencies:
   - pip:
     - absl-py==0.7.0
     - astor==0.7.1
+    - beautifulsoup4==4.7.1
     - chardet==3.0.4
     - docopt==0.6.2
     - gast==0.2.2
@@ -121,6 +122,8 @@ dependencies:
     - requests==2.21.0
     - scikit-learn==0.20.2
     - sklearn==0.0
+    - soupsieve==1.8
+    - spotipy==2.4.4
     - tensorboard==1.12.2
     - tensorflow==1.13.0rc1
     - tensorflow-estimator==1.13.0rc0
