@@ -48,36 +48,37 @@ class LyricsRetriever:
 
         print("Lyrics annotation is starting. Number of requests: {}".format(str(n_req)))
 
-        for k, v in df_s.iterrows():
+        try: 
+            for k, v in df_s.iterrows():
 
-            last_id = k
+                last_id = k
 
-            if n_req != -1 and n_req == 0:
-                break
+                if n_req != -1 and n_req == 0:
+                    break
 
-            try:
-                df_c.loc[k, "lyrics"] = self.scrape_song_url(self.request_song_info(v["title"],
-                                                                                    v["artist"]).json()["response"][
-                                                                 "hits"][0]["result"]["path"])
-            except IndexError:
-                to_be_removed.append(k)
-                print("Record with ID #{} was dropped.".format(str(k)))
+                try:
+                    df_c.loc[k, "lyrics"] = self.scrape_song_url(self.request_song_info(v["title"],
+                                                                                        v["artist"]).json()["response"][
+                                                                     "hits"][0]["result"]["path"])
+                except IndexError:
+                    to_be_removed.append(k)
+                    print("Record with ID #{} was dropped.".format(str(k)))
 
-            print("Requests left: {}".format(str(n_req)))
+                print("Requests left: {} Song: {}".format(str(n_req), v["title"]))
 
-            n_req -= 1
-
-        print("ID of last song annotated: {}".format(str(last_id)))
-        print("Number of items without annotation: {}".format(str(df_c[df_c.lyrics.isnull()].shape[0])))
-        print("Could not find lyrics for songs with IDs: {}".format(to_be_removed))
-        print("Removing them from the list now.")
-        df_c.drop(axis=1, index=to_be_removed, inplace=True)
-        print("Records have been successfully removed.")
-        print("Storing result into the dataset file...")
-        df_c.to_csv("../../" + DATASET_FILE, index=False)
-        print("File saved successfully!")
-        print(df_c)
+                n_req -= 1
+        except KeyboardInterrupt:
+            print("ID of last song annotated: {}".format(str(last_id)))
+            print("Number of items without annotation: {}".format(str(df_c[df_c.lyrics.isnull()].shape[0])))
+            print("Could not find lyrics for songs with IDs: {}".format(to_be_removed))
+            print("Removing them from the list now.")
+            df_c.drop(axis=1, index=to_be_removed, inplace=True)
+            print("Records have been successfully removed.")
+            print("Storing result into the dataset file...")
+            df_c.to_csv("../../" + DATASET_FILE, index=False)
+            print("File saved successfully!")
+            print(df_c)
 
 
 lr = LyricsRetriever()
-lr.add_lyrics(50)  # Change this number to the number of songs you want to annotate and run this scipt
+lr.add_lyrics(267828)  # Change this number to the number of songs you want to annotate and run this scipt
