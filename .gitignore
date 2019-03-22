@@ -210,7 +210,7 @@ $RECYCLE.BIN/
 # Exclude data files
 data/*.csv
 data/*.zip
-res/*
+res/*.zip
 
 # Exclude API parameter files
 # conf/config.ini
