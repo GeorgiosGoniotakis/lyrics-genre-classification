@@ -4,6 +4,7 @@ from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 from autocorrect import spell
 from lib.utils.contractions import *
+from lib.utils.timer import Timer
 import unidecode
 import spacy
 from spacy_langdetect import LanguageDetector
@@ -79,8 +80,7 @@ def fix_typos(s):
 
 def fix_contractions(s):
     """Replaces contractions with full phrase e.g. 'won't' becomes 'will not'"""
-    res = fix(s)
-    return res[0], res[1]
+    return fix(s)
 
 
 def remove_symbols(s):
@@ -98,10 +98,10 @@ def filter_langs(s):
     return s, nlp(s)._.language["language"]
 
 
-def remove_duplicates(data):
+def remove_duplicates(data, cols):
     """Remove duplicates"""
     duplicates = list()
-    for dup in data.duplicated(subset=['song', 'artist']).iteritems():
+    for dup in data.duplicated(subset=cols).iteritems():
         if dup[1]:
             duplicates.append(dup[0])
     data.drop(axis=1, index=duplicates, inplace=True)
@@ -128,7 +128,6 @@ def preprocess_data(data, filters=None, col=None):
         preprocess_data(dataset, filters=['parts', 'contractions', 'punct', 'symbols', 'digits', 'accents', 'custom',
         'typos', 'lang', 'stop', 'stem'], col='lyrics')
     """
-
     functions_dict = {'lower': to_lower, 'punct': remove_punct, 'digits': remove_digits,
                       'stop': remove_swords, 'custom': remove_other, 'stem': stem_words,
                       'typos': fix_typos, 'contractions': fix_contractions, 'lang': filter_langs,
@@ -136,13 +135,23 @@ def preprocess_data(data, filters=None, col=None):
 
     # Remove NaN values
     data.dropna(inplace=True)
+    num = data.shape[0]
+
+    # Remove duplicates
+    data, n_dup = remove_duplicates(data, ['title', 'artist'])
+    print("Number of duplicate records removed: {}".format(n_dup))
+
+    input("Press Enter to begin preprocessing...")
 
     # Apply pre-processing to data series
     if col:
         if filters:
             for f in filters:
+                cnt = 0
                 fun = functions_dict[f]
                 for key, value in data.iterrows():
+                    cnt += 1
+                    print("Filter: {}, Processing record: {}/{}".format(f, cnt, num))
                     res = fun(value[col])
                     if len(res) == 2 and isinstance(res, tuple):
                         if isinstance(res[1], tuple):
@@ -154,17 +163,15 @@ def preprocess_data(data, filters=None, col=None):
                     else:
                         data.at[key, col] = res
 
-    # Remove duplicates
-    data, n_dup = remove_duplicates(data)
-    print("Number of duplicate records removed: {}".format(n_dup))
-
     return data
 
+
 # Running sample
-# import pandas as pd
-#
-# data = pd.read_csv("../../data/380000.csv", index_col=0)
-# data = data[:3]
-# data = preprocess_data(data, filters=['parts', 'lang', 'custom', 'contractions', 'punct', 'typos', 'digits', 'symbols',
-#                                       'accents', 'stop', 'stem'], col='lyrics')
-# print(data["custom"])
+import pandas as pd
+
+data = pd.read_csv("../../data/200000.csv", index_col=0)
+timer = Timer()
+data = preprocess_data(data, filters=['parts', 'contractions', 'punct', 'symbols', 'digits', 'accents', 'custom',
+                                      'lang', 'stop', 'stem'], col='lyrics')
+print("Preprocessing finished in: {} mins".format(str(timer.get_time()/60)))
+data.to_csv("../../data/200000_clean.csv", index=False)

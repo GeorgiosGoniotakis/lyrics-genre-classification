@@ -1,21 +1,18 @@
-from lib.utils.preprocess import *
 from lib.ml.models import *
 
 import pandas as pd
 
-DATASET = "data/380000_clean.csv"
-BALANCED_DATASET = "data/380000_balanced.csv"
+DATASET = "data/380000_final.csv"
 
 # Load the data
-df = pd.read_csv(BALANCED_DATASET)
+df = pd.read_csv(DATASET)
 df.dropna(axis=0, inplace=True)
-
-
-# TODO: Preprocess the data set
-df = preprocess_data(df, col="lyrics")
-df.to_csv("data/380000_balanced_clean.csv", index=False)
+# df.drop(df[(df.lang != "en")].index, inplace=True)
+df = df[["genre", "lyrics"]]
+df.drop(df[(df.genre == "Not Available") | (df.genre == "Other")].index, inplace=True)
 
 # Build model and perform predictions
-log_model = Model("LogisticRegression", "tfidf", "Logistic Regression - Balanced, Basic Cleaning (380)",
-                  "2_logreg_balanced_basic_cleaning_380")
+log_model = Model("FeatureSelection_RF", "tfidf",
+                  "Gradient Boosting - Advanced Cleaning, N/A, Other Removed, TF-IDF (380)",
+                  "shallow/43_gb_advanced_tfidf_380")
 log_model.train_predict(df)
