@@ -2,7 +2,7 @@
 
 """This experiment has been individually packaged to enable
 easier experimentation on online solutions like Kaggle and
-Google Collaboratory. The current implements an LSTM architecture."""
+Google Collaboratory. The current implements a GRU architecture."""
 
 import pandas as pd
 import numpy as np
@@ -10,7 +10,7 @@ import numpy as np
 from keras.preprocessing import sequence
 from keras.preprocessing.text import Tokenizer
 from keras.models import Sequential
-from keras.layers import Dense, Embedding, LSTM
+from keras.layers import Dense, Embedding, GRU
 from keras.callbacks import EarlyStopping
 
 from sklearn.model_selection import train_test_split
@@ -114,7 +114,7 @@ lstm_out = 20  # dimensionality of output space
 
 model = Sequential()
 model.add(embedding_layer)
-model.add(LSTM(lstm_out, dropout_U=0.2, dropout_W=0.2))
+model.add(GRU(lstm_out, dropout_U=0.2, dropout_W=0.2))
 model.add(Dense(10, activation='softmax'))
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',

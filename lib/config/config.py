@@ -8,7 +8,6 @@ from lib.exceptions.ParamFileExceptions import *
 
 
 class Loader:
-    """"""
     CONFIG_FILE = Path("../../" + PARAM_FILE)
     PARAM_LIST = {
         "spotify": ["spotify_client_id",

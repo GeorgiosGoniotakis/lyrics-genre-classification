@@ -8,7 +8,6 @@ from conf.filepaths import DATASET_FILE
 
 
 class LyricsRetriever:
-    """"""
     GENIUS_API_URL = "https://api.genius.com"
     GENIUS_API_LYRICS = "https://genius.com"
 

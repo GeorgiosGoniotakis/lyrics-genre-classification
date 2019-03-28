@@ -22,8 +22,8 @@ np.random.seed(RANDOM_SEED)
 
 """### File Paths"""
 
-DATA = "../../data/200000_clean.csv"
-EMB_FILE_PATH = "/content/drive/My Drive/MLP/glove.840B.300d.txt"
+DATA = "../../data/380000_final.csv"
+EMB_FILE_PATH = "../../emb/glove.840B.300d.txt"
 
 """### Helper Methods"""
 
@@ -158,7 +158,7 @@ def export_report(data, model, title, filepath):
              "\n\n"
 
     print("Metrics for experiment have been stored to file: {}".format(filepath))
-    store_report(report, "experiments/deep/" + filepath)
+    store_report(report, "../../experiments/deep/" + filepath)
 
 
 """### Machine Learning"""
@@ -171,7 +171,7 @@ def build_model(data, w, e, o, b, run):
     title = "Fully Connected - Words: {}, Batch: {}, Epochs: {}, Outputs: {}".format(str(w), str(b), str(e), str(o))
 
     # Create a logger
-    csv_logger = CSVLogger("logs/" + log_file, append=True, separator=';')
+    csv_logger = CSVLogger("../../logs/" + log_file, append=True, separator=';')
 
     # Build the model
     model = Sequential()
@@ -204,7 +204,7 @@ def build_model(data, w, e, o, b, run):
 
 """### Run experiments"""
 
-exp_id = 458
+exp_id = 460
 best_f1 = 100
 best_acc = 100
 

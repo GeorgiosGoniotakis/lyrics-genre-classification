@@ -167,11 +167,11 @@ def preprocess_data(data, filters=None, col=None):
 
 
 # Running sample
-import pandas as pd
-
-data = pd.read_csv("../../data/200000.csv", index_col=0)
-timer = Timer()
-data = preprocess_data(data, filters=['parts', 'contractions', 'punct', 'symbols', 'digits', 'accents', 'custom',
-                                      'lang', 'stop', 'stem'], col='lyrics')
-print("Preprocessing finished in: {} mins".format(str(timer.get_time()/60)))
-data.to_csv("../../data/200000_clean.csv", index=False)
+# import pandas as pd
+#
+# data = pd.read_csv("../../data/200000.csv", index_col=0)
+# timer = Timer()
+# data = preprocess_data(data, filters=['parts', 'contractions', 'punct', 'symbols', 'digits', 'accents', 'custom',
+#                                       'lang', 'stop', 'stem'], col='lyrics')
+# print("Preprocessing finished in: {} mins".format(str(timer.get_time()/60)))
+# data.to_csv("../../data/200000_clean.csv", index=False)

@@ -76,8 +76,6 @@ def reassemble(X, y, target_col):
 
 
 def split_data(X, y):
-    """
-    """
     # Split the data into training and test sets
     return train_test_split(X, y,
                             test_size=TEST_SET_SIZE,
@@ -86,7 +84,6 @@ def split_data(X, y):
 
 def TfIdf(dt_train, dt_test):
     """Builds the TF-IDF matrix."""
-    # ngram_range=(2, 4), max_df=0.90, min_df=5, max_features=MAX_FEATURES
     tfidf_vectorizer = TfidfVectorizer(max_features=MAX_FEATURES)
     X_train = tfidf_vectorizer.fit_transform(dt_train[TEXT_COL])
     X_test = tfidf_vectorizer.transform(dt_test[TEXT_COL])
@@ -95,9 +92,4 @@ def TfIdf(dt_train, dt_test):
 
 
 def BoW(data):
-    """
-
-    Args:
-        col: The column which contains the textual data
-    """
     return CountVectorizer().fit_transform(data)
