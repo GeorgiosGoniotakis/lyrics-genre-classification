@@ -1,18 +1,15 @@
 import os
 import json
 
-import pandas as pd
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
-from conf.filepaths import GENRE_FILE, DATASET_FILE
+from conf.filepaths import GENRE_FILE
 from lib.exceptions.GenreFileExceptions import *
-from lib.config.config import Loader
 from lib.data.lyrics import *
 
 
 class SongsRetriever:
-    """"""
     GENRE_FILE_PATH = os.path.join(os.path.dirname(__file__), '../../' + GENRE_FILE)
     END_YEAR_RANGE = [2003, 2008, 2013, 2018]
     SONGS_PER_CAT = 50

@@ -210,8 +210,15 @@ $RECYCLE.BIN/
 # Exclude data files
 data/*.csv
 data/*.zip
+res/*.zip
+
+# Exclude word embeddings
+emb/*
 
 # Exclude API parameter files
 # conf/config.ini
+
+# Exclude best folder
+best/
 
 # End of https://www.gitignore.io/api/linux,macos,pycharm,windows,webstorm,jupyternotebook

@@ -2,7 +2,6 @@
 
 import re
 
-
 contractions_dict = {
     "ain't": "are not",
     "aren't": "are not",
@@ -131,10 +130,8 @@ contractions_dict = {
     "somethin'": "something",
 }
 
-
 contractions_re_keys = [x.replace("'", "['’]") for x in contractions_dict]
 contractions_dict.update({k.replace("'", "’"): v for k, v in contractions_dict.items()})
-
 
 leftovers_dict = {
     "'all": '',
@@ -166,23 +163,23 @@ slang = {
     "u": "you",
     "r ": "are ",
     "kinda": "kind of",
-    "whatcha" : 'what are you',
-    "wat" : 'what',
-    "wut" : "what",
-    "dontcha" : "do you not",
-    "ya" : "you",
-    "lotta" : "lot of",
-    "betcha" : "bet you",
-    "lemme" : "let me",
-    "oughta" : "ought to",
-    "sorta" : "sort of",
-    "cmon" : "come on",
-    "cos" : "because",
-    "coz" : "because",
-    "cuz" : "because",
-    "s'more" : "some more",
-    "musta" : "must have",
-    "mighta" : "might have",
+    "whatcha": 'what are you',
+    "wat": 'what',
+    "wut": "what",
+    "dontcha": "do you not",
+    "ya": "you",
+    "lotta": "lot of",
+    "betcha": "bet you",
+    "lemme": "let me",
+    "oughta": "ought to",
+    "sorta": "sort of",
+    "cmon": "come on",
+    "cos": "because",
+    "coz": "because",
+    "cuz": "because",
+    "s'more": "some more",
+    "musta": "must have",
+    "mighta": "might have",
     "shoulda": "should have",
     "c'mon": "come on",
     "wontcha": "will you not",
@@ -232,6 +229,8 @@ ru = _replacer(unsafe_dict)
 
 
 def fix(s, leftovers=True, slang=True):
+    cnt_contractions = len(contractions_re.findall(s)) + len(leftovers_re.findall(s))
+    cnt_slang = len(unsafe_re.findall(s))
     # when not expecting a lot of matches, this will be 30x faster
     # otherwise not noticeably slower even in benchmarks
     if not LIM_RE.search(s):
@@ -241,9 +240,10 @@ def fix(s, leftovers=True, slang=True):
             # ensure str like expected from re.sub
             return str(s)
     s = contractions_re.sub(rc, s)
+
     if leftovers:
         s = leftovers_re.sub(rl, s)
     if slang:
         s = unsafe_re.sub(ru, s)
 
-    return s
+    return s, (cnt_contractions, cnt_slang)

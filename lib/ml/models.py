@@ -5,8 +5,10 @@ from lib.ml.exporter import *
 from lib.ml.prepare import *
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
+from sklearn.svm import SVC, LinearSVC
+from sklearn.pipeline import Pipeline
+from sklearn.feature_selection import SelectFromModel
 
 
 class Model:
@@ -26,6 +28,7 @@ class Model:
         self.__title = title
         self.__filepath = filepath
         self.__timer = None
+        self.__kind = kind
 
     def init_model(self, kind):
         """Initializes a Machine Learning model.
@@ -36,12 +39,27 @@ class Model:
         Returns:
             The requested model
         """
+
         if kind == "SVM":
             return SVC()
         elif kind == "RandomForest":
-            return RandomForestClassifier(n_estimators=500)
+            return RandomForestClassifier(n_estimators=500,
+                                          n_jobs=-1,
+                                          verbose=True)
         elif kind == "LogisticRegression":
-            return LogisticRegression()
+            return LogisticRegression(verbose=True)
+        elif kind == "GradientBoosting":
+            return GradientBoostingClassifier(n_estimators=50,
+                                              verbose=True)
+        elif kind == "AdaBoost":
+            return AdaBoostClassifier(n_estimators=500)
+        elif kind == "FeatureSelection_RF":
+            return Pipeline([
+                ('feature_selection', SelectFromModel(LinearSVC(loss='l2', penalty='l1', dual=False))),
+                ('classification', RandomForestClassifier(n_estimators=1000,
+                                                          n_jobs=-1,
+                                                          verbose=True))
+            ])
         else:
             raise NoMLModelFound(kind)
 
@@ -53,6 +71,10 @@ class Model:
         print("Training process has started for experiment: {}".format(self.__title))
         X_train, X_test, y_train, y_test = prepare_data(data, self.__method)
         self.__model.fit(X_train, y_train)
+
+        if self.__kind == "FeatureSelection_RF":
+            print("Final features in selection: {}".format(
+                str(self.__model.named_steps["feature_selection"].get_support().shape)))
 
         print("Performing predictions for experiment: {}".format(self.__title))
         y_pred_train = self.__model.predict(X_train)

@@ -1,201 +1,177 @@
-import re
+"""Run >> python -m spacy download en << to obtain the English collection of spacy."""
 
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 from autocorrect import spell
 from lib.utils.contractions import *
+from lib.utils.timer import Timer
 import unidecode
 import spacy
 from spacy_langdetect import LanguageDetector
 
+nlp = spacy.load('en')
+nlp.add_pipe(LanguageDetector(), name="language_detector", last=True)
 
-def to_lower(s, out=False):
+
+def to_lower(s):
     """Converts a given string to lower case."""
     return s.lower()
 
 
-def remove_punct(s, out=False):
+def remove_punct(s):
     """Removes the punctuation from a given string."""
-    if out and len(re.findall(r'[^\w\s]', s)) > 0:
-        print('Number of punctuation removed: ' + str(len(re.findall(r'[^\w\s]', s))))
-    return re.sub(r'[^\w\s]', '', s)
+    hits = len(re.findall(r'[.,!;:\-_]', s))
+    sanitized = re.sub(r'[.,!;:\-_]', '', s)
+    return sanitized, hits
 
 
-def remove_digits(s, out=False):
+def remove_digits(s):
     """Removes digits from a given string"""
-    if out and len(re.findall('\d+', s)) > 0:
-        print('Number of digits removed: ' + str(len(re.findall('\d+', s))))
-    return re.sub('\d+', '', s)
+    hits = len(re.findall(r'\d+', s))
+    sanitized = re.sub(r'\d+', '', s)
+    return sanitized, hits
 
 
-def remove_swords(s, out=False):
+def remove_swords(s):
     """Removes the stop words from a given string."""
+    res = list()
+    removed_cnt = 0
     stop_words = stopwords.words('english')
-    return " ".join([item for item in s.split() if item not in stop_words])
+    for item in s.split():
+        if item not in stop_words:
+            res.append(item)
+        else:
+            removed_cnt += 1
+    return " ".join(res), removed_cnt
 
 
-def remove_other(s, out=False):
+def remove_other(s):
     """Replaces a new line with a space."""
-    rem_words = ["\n"]
-    return " ".join([item for item in s.split() if item not in rem_words])
+    space_count = len(re.findall(r"\n|\r", s))
+    return re.sub(r"\n|\r", " ", s), space_count
 
 
-def remove_accents(s, out=False):
+def remove_accents(s):
     """Removes accents such as é and ë"""
-    if out:
-        if unidecode.unidecode(s) != s:
-            print(s, unidecode.unidecode(s))
-    return unidecode.unidecode(s)
+    accent_cnt = 0
+    sanitized = unidecode.unidecode(s)
+    if sanitized != s:
+        accent_cnt += 1
+    return sanitized, accent_cnt
 
 
-def stem_words(s, out=False):
+def stem_words(s):
     """Performs stemming on a given string."""
     stemmer = SnowballStemmer('english')
     return " ".join([stemmer.stem(w) for w in s.split()])
 
 
-def fix_typos(s, out=False):
+def fix_typos(s):
     """Fixes common spelling mistakes"""
+    typos_cnt = 0
     final = ''
     for w in s.split():
-        final += spell(w) + ' '
-        if spell(w) != w and out:
-            print('{} was corrected to: {}'.format(w, spell(w)))
-    return final
+        spell_cor = spell(w)
+        final += spell_cor + ' '
+        if spell_cor != w:
+            typos_cnt += 1
+    return final, typos_cnt
 
 
-def fix_contractions(s, out=False):
+def fix_contractions(s):
     """Replaces contractions with full phrase e.g. 'won't' becomes 'will not'"""
     return fix(s)
 
 
-def remove_symbols(s, out=False):
+def remove_symbols(s):
     """Removes remaining symbols such as $,% etc."""
-    if out and len(re.findall('(?=[^\s])\W', s)) > 0:
-        print('Number of symbols removed: ' + str(len(re.findall('(?=[^\s])\W', s))))
-    return re.sub('(?=[^\s])\W', '', s)
+    return re.sub('(?=[^\s])\W', '', s), len(re.findall('(?=[^\s])\W', s))
 
 
-def remove_parts(s, out=False):
+def remove_parts(s):
     """Removes text in square brackets e.g. [Verse 1]"""
-    if out and len(re.findall('\[(.*?)\]', s)) > 0:
-        print('Number of parts removed: ' + str(len(re.findall('\[(.*?)\]', s))))
-    return re.sub('\[(.*?)\]', '', s)
+    return re.sub('\[(.*?)\]', '', s), len(re.findall('\[(.*?)\]', s))
 
 
-def filter_langs(s, out=False):
+def filter_langs(s):
     """Removes sentences that are not recognised as english"""
-    nlp = spacy.load('en')
-    nlp.add_pipe(LanguageDetector(), name="language_detector", last=True)
-    new_s = ''
-    for x in s.split('\n'):
-        doc = nlp(x)
-        if doc._.language['language'] == 'en':
-            new_s = new_s + x + ' '
-    return new_s
+    return s, nlp(s)._.language["language"]
 
 
-def standard_preprocessing(s):
-    """Invokes all the necessary methods to perform data preprocessing."""
-    return stem_words(remove_swords(remove_digits(remove_punct(remove_other(to_lower(s))))))
+def remove_duplicates(data, cols):
+    """Remove duplicates"""
+    duplicates = list()
+    for dup in data.duplicated(subset=cols).iteritems():
+        if dup[1]:
+            duplicates.append(dup[0])
+    data.drop(axis=1, index=duplicates, inplace=True)
+    return data, len(duplicates)
 
 
-def custom_preprocessing(s, filters, out=False):
-    """Invokes the functions specified on the given string
-    Filters that can be applied:
-        'lower': converts string to lower case
-        'punct': removes punctuation
-        'digits': removes digits
-        'stop': removes stop words
-        'stem': applies stemming
-        'custom': removes symbols as defined in rem_other
-    Args:
-        s: String to which the preprocessing should be applied
-        filters: A list of strings of preprocessing functions to be applied to the string
-    Returns:
-        The preprocessed string
-    """
-    functions_dict = {'lower': to_lower, 'punct': remove_punct, 'digits': remove_digits,
-                      'stop': remove_swords, 'custom': remove_other, 'stem': stem_words,
-                      'typos': fix_typos, 'contractions': fix_contractions, 'lang': filter_langs,
-                      'accents': remove_accents, 'symbols': remove_symbols, 'parts': remove_parts}
-    # Iterate through filters list and apply each function to string
-    for f in filters:
-        # Check that the filter is valid, otherwise print error message
-        if f in functions_dict:
-            fun = functions_dict[f]
-            if out:
-                s = fun(s, out=True)
-            else:
-                s = fun(s)
-        else:
-            print(f + ' : Function not recognised')
-    return s
-
-
-def preprocess_data(data, filters=None, col=None, out=False):
+def preprocess_data(data, filters=None, col=None):
     """Preprocesses a given DataFrame or string entry.
     If a list of functions is not specified,
     it applies conversion to lowercase, removes punctuation, removes digits,
     removes stop words and stems the words.
 
     Functions that can be specified are the above
+
     Args:
         data: A pandas DataFrame or a single string.
         filters: A list of pre-processing functions to be applied to the data
         col: The name of the column that needs NLP preprocessing.
+
     Returns:
         The resulting data set.
+
+    Example:
+        preprocess_data(dataset, filters=['parts', 'contractions', 'punct', 'symbols', 'digits', 'accents', 'custom',
+        'typos', 'lang', 'stop', 'stem'], col='lyrics')
     """
+    functions_dict = {'lower': to_lower, 'punct': remove_punct, 'digits': remove_digits,
+                      'stop': remove_swords, 'custom': remove_other, 'stem': stem_words,
+                      'typos': fix_typos, 'contractions': fix_contractions, 'lang': filter_langs,
+                      'accents': remove_accents, 'symbols': remove_symbols, 'parts': remove_parts}
+
+    # Remove NaN values
+    data.dropna(inplace=True)
+    num = data.shape[0]
+
+    # Remove duplicates
+    data, n_dup = remove_duplicates(data, ['title', 'artist'])
+    print("Number of duplicate records removed: {}".format(n_dup))
+
+    input("Press Enter to begin preprocessing...")
 
     # Apply pre-processing to data series
     if col:
         if filters:
-            # Apply custom pre-processing as defined by user in filters parameter
-            data[col] = data[col].apply(custom_preprocessing, args=(filters,), out=True)
-        else:
-            # Apply standard pre-processing
-            data[col] = data[col].apply(standard_preprocessing)
-    # Apply pre-processing to a string
-    else:
-        if filters:
-            # Apply custom pre-processing as defined by user in filters parameter
-            data = custom_preprocessing(data, filters, out=True)
-        else:
-            # Apply standard pre-processing
-            data = standard_preprocessing(data)
+            for f in filters:
+                cnt = 0
+                fun = functions_dict[f]
+                for key, value in data.iterrows():
+                    cnt += 1
+                    print("Filter: {}, Processing record: {}/{}".format(f, cnt, num))
+                    res = fun(value[col])
+                    if len(res) == 2 and isinstance(res, tuple):
+                        if isinstance(res[1], tuple):
+                            data.at[key, col] = res[0]
+                            data.at[key, "contr"] = res[1][0]
+                            data.at[key, "slang"] = res[1][1]
+                        else:
+                            data.at[key, col], data.at[key, f] = res
+                    else:
+                        data.at[key, col] = res
+
     return data
 
 
-def create_dict(data):
-    """Returns a dictionary where key: unique artist and value: list of songs by that artist"""
-    d = dict()
-    for index, row in data.iterrows():
-        current = row['artist']
-        if current not in d.keys():
-            d[current] = [row['song']]
-        else:
-            d[current].append(row['song'])
-    return d
-
-
-def find_duplicates(data):
-    """Prints duplicate songs"""
-    dic = create_dict(data)
-    for key, value in dic.items():
-        s = set([x for x in value if value.count(x) > 1])
-        if s:
-            print(key, s)
-
-
-def remove_duplicates(data, out=False):
-    """Remove duplicates"""
-    duplicates = list()
-    for dup in data.duplicated(subset=['song', 'artist']).iteritems():
-        if dup[1]:
-            duplicates.append(dup[0])
-    if out:
-        print(len(duplicates) + ' duplicates removed')
-    data.drop(axis=1, index=duplicates, inplace=True)
-    return data
-
+# Running sample
+# import pandas as pd
+#
+# data = pd.read_csv("../../data/200000.csv", index_col=0)
+# timer = Timer()
+# data = preprocess_data(data, filters=['parts', 'contractions', 'punct', 'symbols', 'digits', 'accents', 'custom',
+#                                       'lang', 'stop', 'stem'], col='lyrics')
+# print("Preprocessing finished in: {} mins".format(str(timer.get_time()/60)))
+# data.to_csv("../../data/200000_clean.csv", index=False)
