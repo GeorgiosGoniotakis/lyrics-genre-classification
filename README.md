@@ -3,7 +3,7 @@
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ### Project Description
-This project was developed by: <a href="https://www.linkedin.com/in/georgiosgoniotakis/">Georgios Goniotakis</a>, <a href="https://www.linkedin.com/in/clarissa-cremona/">Clarissa Cremona</a> and <a href="https://www.linkedin.com/in/ezgi-tekdemir/">Ezgi Tekdemir</a>. Feel free to contact us for any questions or feedback about the project :smile:
+A detailed report which illustrates our research approach can be found on [this doc](https://github.com/GeorgiosGoniotakis/lyrics-genre-classification/blob/master/Music_genre_identification_using_lyrics.pdf). This project was developed by: <a href="https://www.linkedin.com/in/georgiosgoniotakis/">Georgios Goniotakis</a>, <a href="https://www.linkedin.com/in/clarissa-cremona/">Clarissa Cremona</a> and <a href="https://www.linkedin.com/in/ezgi-tekdemir/">Ezgi Tekdemir</a>. Feel free to contact us for any questions or feedback about the project :smile:
 
 ### Installation
 Use the <a href="environment.yml">environment.yml</a> file to build a conda environment with all the essential packages.
